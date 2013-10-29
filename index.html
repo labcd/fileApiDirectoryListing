@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <title>File API Directory Listing</title>
+        
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript">
+
+         
+            function init() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+            
+            
+            function onDeviceReady() {
+                
+                // reques the filesystem
+                window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, onSuccessCallback, onErrorCallback);
+
+                // the filesystem object has
+                // name: A DOMString object that represents the name of the file system
+                // root: A DirectoryEntry object that represents the root directory of the file system
+
+                // a DirectoryEntry object has these properties:
+                // isFile: A boolean value that is always false as this is a directory
+                // isDirectory: A boolean value that is always true
+                // name: A DOMString object representing the name of the directory
+                // fullPath: A DOMString object that represents the full absolute path of the directory from the root
+
+                function onSuccessCallback(fs) {
+                    
+                    var element = document.getElementById('info');
+                    var output = '';
+
+                    output += '<p><b>Filesystem Object Properties</b><br/>';
+                    output += 'Name: ' + fs.name + '</p>';
+                    
+                    output += '<p><b>Directory Entry Properties</b><br/>';
+                    output += 'Name: ' + fs.root.name + '<br/>';
+                    output += 'Full Path: ' + fs.root.fullPath + '<br/>';
+                    output += 'Is a File? '+ fs.root.isFile + '<br/>';
+                    output += 'Is a Directory? '+ fs.root.isDirectory + '</p>';                
+
+
+                    element.innerHTML = output;
+
+                    // Get a directory reader
+                    var directoryReader = fs.root.createReader();
+
+                    directoryReader.readEntries(success, onErrorCallback);
+
+                }
+
+                function success(entries) {
+                    
+                    alert("gonna read the contents of root the directory, please be patient ;)");
+                    
+                    var element = document.getElementById('listing');
+                    var output = '';
+                    var i;
+                    
+                    for (i=0; i<entries.length; i++) {
+                        output += '<li>' + entries[i].name + '</li>';
+                    }
+
+                    
+                    element.innerHTML = output;
+
+
+                }
+
+                // callback for all possible errors
+                function onErrorCallback(error){
+                    alert("an error has ocurred" + error.code);
+                    console.log(error);
+                }
+                    
+            }
+
+        </script>
+    </head>
+    <body onload="init()">
+    
+    <h1>Directory Listing</h1>
+    <p id="info"></p>
+    <ul id="listing"></ul>
+
+
+    </body>
+</html>
